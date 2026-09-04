@@ -1,0 +1,198 @@
+#day1
+
+#碎碎念：
+ 依旧困难，编程这玩意是谁在学啊，完全学不会，依旧在军训中百忙之中抽出时间学，没招了，一个案例直接学了两天，不知道怎么在大一前学完啊，老实了
+
+#碎碎念2：
+ 广州发生了好多持刀伤人事件，害怕，世道好乱，是不是不用学习了，哪天走路上被人一刀噶死就老实了
+
+
+package test3;
+
+import java.security.PublicKey;
+import java.util.Random;
+
+public class Role {
+    private String name;
+    private int blood;
+    private char gender;
+    private String face ;//随机
+
+    String[] boyfaces={"风流俊雅","气宇轩昂","相貌英俊","五官端正","相貌平平","一塌糊涂","面目净狞"};
+    String[] girlfaces={"美奂绝伦","沉鱼落雁","婷婷玉立","身材娇好","相貌平平","相貌简陋","惨不忍睹"};
+
+    //attack攻击描述:
+    String[] attacks_desc= {
+            "%s使出了一招【背心钉】，转到对方的身后，一掌向%s背心的灵台穴拍去。",
+            "%s使出了一招【游空探爪】，飞起身形自半空中变掌为抓锁向%s。",
+            "%s大喝一声，身形下伏，一招【劈雷坠地】，捶向%s双腿。",
+            "%s运气于掌，一瞬间掌心变得血红，一式【掌心雷】，推向%s。",
+            "%s阴手翻起阳手跟进，一招【没遮拦】，结结实实的捶向%s。",
+            "%s上步抢身，招中套招，一招【劈挂连环】，连环攻向%s。"
+    };
+
+    String[] injureds_desc={
+            "结果%s退了半步，毫发无损",
+            "结果给%s造成一处瘀伤",
+            "结果一击命中，%s痛得弯下腰",
+            "结果%s痛苦地闷哼了一声，显然受了点内伤",
+            "结果%s摇摇晃晃，一跤摔倒在地",
+            "结果%s脸色一下变得惨白，连退了好几步",
+            "结果[轰]的一声，%s口中鲜血狂喷而出",
+            "结果%s一声惨叫，像滩软泥般塌了下去"
+    };
+
+
+    public Role() {
+    }
+
+    public Role(String name, int blood,char gender) {
+        this.name = name;
+        this.blood = blood;
+        this.gender = gender;
+        setFace(gender);
+	//长相随机，无需输入，依靠性别
+    }
+
+    public char getGender() {
+        return gender;
+    }
+
+    public void setGender(char gender) {
+        this.gender = gender;
+    }
+
+    public String getFace() {
+        return face;
+    }
+
+    //难点：根据性别，生成随机长相，输出长相所需的数据就是gender，所以char gender
+    public void setFace(char gender) {
+        //长相随机，根据男女不同
+        Random r = new Random();
+        if(gender == '男') {
+            int num = r.nextInt(boyfaces.length);
+            this.face=boyfaces[num];
+        }else if(gender == '女'){
+            int num = r.nextInt(girlfaces.length);
+            this.face=girlfaces[num];
+        }
+        else{
+            this.face = "惨不忍睹";
+        }
+
+    }
+
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public int getBlood() {
+        return blood;
+    }
+
+    public void setBlood(int blood) {
+        this.blood = blood;
+    }
+
+    //攻击这一行为
+
+    public void attack(Role role) {
+        //造成随机伤害
+        Random r = new Random();
+        int index = r.nextInt(attacks_desc.length);
+        int hurt = r.nextInt(20) + 1;
+        //剩余血量
+        int remainBlood = role.getBlood() - hurt;
+        //检测是否为负数，若是，改为0
+        remainBlood = remainBlood < 0 ? 0 : remainBlood;
+	//修改被攻击者的血量
+        role.setBlood(remainBlood);
+
+        //用随机索引获取招式
+	String KungFu = attacks_desc[index];
+        System.out.printf(KungFu,this.getName(),role.getName());
+        System.out.println();
+
+        //根据血量来反馈招式的效果
+        if(remainBlood >90){
+            System.out.printf(injureds_desc[0],role.getName());
+        }else if(remainBlood >80){
+            System.out.printf(injureds_desc[1],role.getName());
+        }else if(remainBlood >70){
+            System.out.printf(injureds_desc[2],role.getName());
+        }else if(remainBlood >60){
+            System.out.printf(injureds_desc[3],role.getName());
+        }else if(remainBlood >40){
+            System.out.printf(injureds_desc[4],role.getName());
+        }else if(remainBlood >30){
+            System.out.printf(injureds_desc[5],role.getName());
+        }else if(remainBlood >20){
+            System.out.printf(injureds_desc[6],role.getName());
+        }else{
+            System.out.printf(injureds_desc[7],role.getName());
+        }
+        System.out.println();
+    }
+
+    public  void  show(){
+        System.out.println("姓名："+getName());
+        System.out.println("血量："+getBlood());
+        System.out.println("性别："+getGender());
+        System.out.println("长相："+getFace());
+    }
+}
+
+
+
+
+
+package test3;
+
+public class GameTest {
+    public static void main(String[] args) {
+        Role r1 = new Role("时代",100,'男');
+        Role r2 = new Role("大师",100,'男');
+
+        r1.show();
+        r2.show();
+
+
+	//不知道循环的次数，故用while
+        while (true){
+            r1.attack(r2);
+            if(r2.getBlood()==0){
+                System.out.println(r1.getName()+"把"+r2.getName()+"击败");
+                break;
+            }
+            r2.attack(r1);
+            if(r1.getBlood()==0){
+                System.out.println(r2.getName()+"把"+r1.getName()+"击败");
+                break;
+            }
+        }
+    }
+}
+
+
+
+
+#souf:
+ 用占位符进行输出语句，没有自动换行效果
+ 	一部分：要输出的内容%s（占位）
+ 	一部分：填充的数据
+        System.out.printf("%s打了%s","张三","李四");
+
+
+
+#胡言胡语：
+ 学是学不完的，前面的知识是全忘光光的，复习是一点没有的
+ 痛，太痛了
+ QWQ
+
+
